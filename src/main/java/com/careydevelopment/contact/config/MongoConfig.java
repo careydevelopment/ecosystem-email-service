@@ -20,8 +20,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Value("${mongo.db.name}") 
     private String contactDb;
     
-    @Value("${contact.properties.file.location}")
-    private String contactPropertiesFile;
+    @Value("${ecosystem.properties.file.location}")
+    private String ecosystemPropertiesFile;
     
     @Override
     protected String getDatabaseName() {
@@ -32,8 +32,8 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     @Bean
     public MongoClient mongoClient() {
-        PropertiesUtil propertiesUtil = new PropertiesUtil(contactPropertiesFile);
-        String connectionString = propertiesUtil.getProperty("mongodb.carey-contact.connection");
+        PropertiesUtil propertiesUtil = new PropertiesUtil(ecosystemPropertiesFile);
+        String connectionString = propertiesUtil.getProperty("mongodb.carey-ecosystem.connection");
         String fullConnectionString = connectionString + "/" + contactDb;
         
         MongoClient client = MongoClients.create(fullConnectionString);
