@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -40,15 +41,16 @@ public class Contact {
 	
 	private List<LineOfBusiness> linesOfBusiness;
 	
-	@Size(max = 50, message = "Company name cannot exceed 50 characters")
-	private String company;
-	
 	@Size(max = 50, message = "Title cannot exceed 50 characters")
 	private String title;
 	private Boolean authority;
 	private SalesOwner salesOwner;
 	
 	private List<Sale> sales = new ArrayList<Sale>();
+	
+	@NotNull
+	private Account account;
+	
 	
 	public String getId() {
 		return id;
@@ -165,19 +167,6 @@ public class Contact {
 	}
 
 
-
-	public String getCompany() {
-		return company;
-	}
-
-
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
-
-
-
 	public String getTitle() {
 		return title;
 	}
@@ -235,8 +224,19 @@ public class Contact {
 	}
 
 
+	public Account getAccount() {
+        return account;
+    }
 
-	public String toString() {
+
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+
+
+    public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
 }
