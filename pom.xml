@@ -58,6 +58,14 @@
             <artifactId>google-api-services-gmail</artifactId>
             <version>v1-rev110-1.25.0</version>
         </dependency>
+        <dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-core</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-sync</artifactId>
+		</dependency>
     </dependencies>
   
     <properties>
