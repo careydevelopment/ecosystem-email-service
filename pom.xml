@@ -45,6 +45,10 @@
 		    <artifactId>validation-api</artifactId>
 		</dependency>
 		<dependency>
+		    <groupId>javax.xml.bind</groupId> 
+		    <artifactId>jaxb-api</artifactId>
+		</dependency>
+		<dependency>
           <groupId>com.google.api-client</groupId>
           <artifactId>google-api-client</artifactId>
           <version>1.30.10</version>
