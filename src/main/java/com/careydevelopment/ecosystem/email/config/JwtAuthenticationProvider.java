@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.config;
+package com.careydevelopment.ecosystem.email.config;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,8 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import com.careydevelopment.ecosystem.product.exception.ProductServiceAuthenticationException;
-import com.careydevelopment.ecosystem.product.util.PropertiesUtil;
+import com.careydevelopment.ecosystem.email.exception.EmailServiceAuthenticationException;
+import com.careydevelopment.ecosystem.email.util.PropertiesUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -58,11 +58,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
             LOG.debug("Authentication token: " + auth);            
         } catch (IllegalArgumentException e) {
-            throw new ProductServiceAuthenticationException("Invalid token");
+            throw new EmailServiceAuthenticationException("Invalid token");
         } catch (ExpiredJwtException e) {
-            throw new ProductServiceAuthenticationException("Token expired");
+            throw new EmailServiceAuthenticationException("Token expired");
         } catch (SignatureException e) {
-            throw new ProductServiceAuthenticationException("Invalid signature");
+            throw new EmailServiceAuthenticationException("Invalid signature");
         }
         
         return auth;

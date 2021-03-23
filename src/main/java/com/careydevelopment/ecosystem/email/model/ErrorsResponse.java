@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.model;
+package com.careydevelopment.ecosystem.email.model;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 

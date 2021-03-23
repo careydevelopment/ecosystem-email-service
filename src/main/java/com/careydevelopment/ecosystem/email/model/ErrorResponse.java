@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.model;
+package com.careydevelopment.ecosystem.email.model;
 
 import java.util.ArrayList;
 import java.util.List;
