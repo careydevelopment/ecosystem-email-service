@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.careydevelopment.ecosystem.email.model.CredentialCheck;
 import com.careydevelopment.ecosystem.email.model.GoogleAuthResponse;
 import com.careydevelopment.ecosystem.email.service.GoogleApiDataStoreFactory;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -22,13 +21,10 @@ import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.DataStore;
 import com.google.api.client.util.store.DataStoreFactory;
-import com.google.api.services.gmail.Gmail;
-import com.google.api.services.gmail.Gmail.Users.Messages;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.ListMessagesResponse;
 
 @Component
 public class GoogleOauthUtil {
@@ -71,7 +67,7 @@ public class GoogleOauthUtil {
 		
 		GoogleAuthorizationCodeFlow authorizationCodeFlow = new GoogleAuthorizationCodeFlow.Builder(
 				new NetHttpTransport(), 
-				new JacksonFactory(), 
+				new GsonFactory(), 
 				clientId, 
 				clientSecret, 
 				Collections.singletonList(GmailScopes.MAIL_GOOGLE_COM))
@@ -98,72 +94,11 @@ public class GoogleOauthUtil {
 	}
 	
 	
-	public CredentialCheck getCredentialCheck(String id, String baseRedirectUrl) {		
-		CredentialCheck check = new CredentialCheck();
-		
-		LOG.debug("The user id is " + id);
-		
+	public String getAuthorizationCode(String id, String redirectUrl) {		
 		try {
-			GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
-			Credential credential = acf.loadCredential(id);
-			LOG.debug("Credential is " + credential);
-			
-			if (credential == null) {
-				String redirectUrl = RedirectUtil.getEmailRedirect(baseRedirectUrl);
-				
-				AuthorizationCodeRequestUrl acru = getAuthorizationCodeFlow(id).newAuthorizationUrl();
-				acru.setRedirectUri(redirectUrl).build();
-				acru.setState("state");
-				
-				check.setAuthUrl(acru.build());
-			} else {
-				//if we get here, we know we have an access token, but it might be invalid
-				//we'll do a quick peek at the inbox to make sure it's still valid
-				if (validCredential(credential, id)) {
-					System.err.println("Setting access token");
-					check.setAccessToken(credential.getAccessToken());	
-				} else {
-					LOG.debug("Token looks invalid");
-				}
-			}
-		} catch (Exception e) {
-			LOG.error("Problem with credential check!", e);
-		}
-
-		return check;
-	}
-
-	
-	private boolean validCredential(Credential credential, String userId) {
-		boolean valid = false;
-		
-		try {
-	        Gmail service = new Gmail.Builder(new NetHttpTransport(), new JacksonFactory(), credential)
-	                .setApplicationName(Constants.GMAIL_APPLICATION_NAME)
-	                .build();	        
-	        
-	        Messages messages = service.users().messages();
-	        Gmail.Users.Messages.List messageList = messages.list("me");
-	        ListMessagesResponse rsp = messageList.execute();
-	        
-	        //if we get here without an exception, then the token is valid
-	        valid = true;
-		} catch (Exception e) {
-			//if we get here, the token is invalid
-			LOG.info("Looks like an invalid credential");
-		}
-
-		return valid;
-	}
-	
-
-	public String getAuthorizationCode(String id, String baseRedirectUrl) {		
-		try {
-			String redirectUrl = RedirectUtil.getEmailRedirect(baseRedirectUrl);
-			
 			AuthorizationCodeRequestUrl acru = getAuthorizationCodeFlow(id).newAuthorizationUrl();
 			acru.setRedirectUri(redirectUrl).build();
-			acru.setState("state");
+			//acru.setState("state");
 			
 			LOG.debug(acru.toString());
 			
@@ -202,7 +137,7 @@ public class GoogleOauthUtil {
 		GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
 		
 		AuthorizationCodeTokenRequest req = acf.newTokenRequest(auth.getCode());
-		req.setRedirectUri(RedirectUtil.getEmailRedirect(auth.getBaseRedirectUrl()));
+		req.setRedirectUri(auth.getRedirectUrl());
 
         Credential credential = null;
 		

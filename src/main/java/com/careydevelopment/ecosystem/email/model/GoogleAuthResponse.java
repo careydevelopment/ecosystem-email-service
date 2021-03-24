@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 public class GoogleAuthResponse {
 
 	private String code;
-	private String baseRedirectUrl;
+	private String redirectUrl;
 
 	public String getCode() {
 		return code;
@@ -14,16 +14,16 @@ public class GoogleAuthResponse {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
-	public String getBaseRedirectUrl() {
-		return baseRedirectUrl;
-	}
 
-	public void setBaseRedirectUrl(String baseRedirectUrl) {
-		this.baseRedirectUrl = baseRedirectUrl;
-	}
+	public String getRedirectUrl() {
+        return redirectUrl;
+    }
 
-	public String toString() {
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
 }

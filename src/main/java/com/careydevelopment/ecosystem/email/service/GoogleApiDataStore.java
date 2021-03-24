@@ -105,5 +105,4 @@ public class GoogleApiDataStore<V extends Serializable> extends AbstractDataStor
 	public DataStore<V> delete(String key) throws IOException {
 		return null;
 	}
-
 }
