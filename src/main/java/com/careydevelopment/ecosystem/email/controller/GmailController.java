@@ -37,12 +37,11 @@ public class GmailController {
     private AuthorizationUtil authUtil;
 
     
-    
     @GetMapping("/email/authorizationCode")
-    public ResponseEntity<?> getAuthorizationCode(@RequestParam("redirectUrl") String redirectUrl) {
+    public ResponseEntity<?> getAuthorizationCodeUrl(@RequestParam("redirectUrl") String redirectUrl) {
         User currentUser = authUtil.getCurrentUser();
         
-        String url = googleOauthUtil.getAuthorizationCode(currentUser.getId(), redirectUrl);            
+        String url = googleOauthUtil.getAuthorizationCodeUrl(currentUser.getId(), redirectUrl);            
         return ResponseEntity.ok(url);
     }
     

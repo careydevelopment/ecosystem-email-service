@@ -25,6 +25,4 @@ public class GoogleApiDataStoreFactory extends AbstractDataStoreFactory {
 	protected <V extends Serializable> DataStore<V> createDataStore(String id) throws IOException {
 		return new GoogleApiDataStore<V>(this, id, userRepository, authorizationUtil);
 	}
-
-
 }
