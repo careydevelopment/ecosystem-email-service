@@ -1,6 +1,7 @@
 package com.careydevelopment.ecosystem.email.util;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.Gmail.Users.Messages;
@@ -69,9 +70,7 @@ public class GmailUtil {
     private Email getSingleEmailMessageById(String id, Gmail service) {
         try {
             Message retrievedMessage = service.users().messages().get("me", id).setFormat("full").execute();
-            //System.err.println(message);
             Email email = getEmail(retrievedMessage);
-            System.err.println("Email is " + email.getSubject() + " " + email.getId());
             return email;
         } catch (IOException ie) {
             LOG.error("Problem retrieving individual message!");
@@ -81,8 +80,8 @@ public class GmailUtil {
     }
     
     
-    public List<Email> getInbox(Credential credential) {
-        Gmail service = new Gmail.Builder(new NetHttpTransport(), new GsonFactory(), credential)
+    public List<Email> getInbox(Credential credential) throws IOException, GeneralSecurityException {
+        Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
                 .setApplicationName(Constants.GMAIL_APPLICATION_NAME)
                 .build();           
         

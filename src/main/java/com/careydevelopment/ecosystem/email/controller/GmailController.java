@@ -1,5 +1,7 @@
 package com.careydevelopment.ecosystem.email.controller;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,12 +69,20 @@ public class GmailController {
     public ResponseEntity<?> inbox() {
         LOG.debug("In inbox");
 
-        List<Email> inbox = new ArrayList<Email>();
-        User currentUser = authUtil.getCurrentUser();
-        
-        Credential credential = googleOauthUtil.getCredential(currentUser.getId());
-        inbox = gmailUtil.getInbox(credential);    
-        
-        return ResponseEntity.ok(inbox);
+        try {
+            List<Email> inbox = new ArrayList<Email>();
+            User currentUser = authUtil.getCurrentUser();
+            
+            Credential credential = googleOauthUtil.getCredential(currentUser.getId());
+            inbox = gmailUtil.getInbox(credential);
+            
+            return ResponseEntity.ok(inbox);
+        } catch (IOException ie) {
+            LOG.error("Problem retrieving inbox!", ie);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ie.getMessage());
+        } catch (GeneralSecurityException ge) {
+            LOG.error("Security issue!", ge);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ge.getMessage());
+        }
     }
 }
