@@ -54,7 +54,11 @@ public class GmailUtil {
     private List<Message> getMessageList(Gmail service) {
         try {
             Messages messages = service.users().messages();
-            Gmail.Users.Messages.List messageList = messages.list("me").setQ("in:inbox -category:{social promotions forums}").setMaxResults(20l);
+            Gmail.Users.Messages.List messageList = messages
+                                                    .list("me")
+                                                    .setQ("in:inbox -category:{social promotions forums}")
+                                                    .setMaxResults(20l);
+            
             ListMessagesResponse rsp = messageList.execute();
             List<Message> list = rsp.getMessages();
     
@@ -69,7 +73,13 @@ public class GmailUtil {
 
     private Email getSingleEmailMessageById(String id, Gmail service) {
         try {
-            Message retrievedMessage = service.users().messages().get("me", id).setFormat("full").execute();
+            Message retrievedMessage = service
+                                        .users()
+                                        .messages()
+                                        .get("me", id)
+                                        .setFormat("full")
+                                        .execute();
+            
             Email email = getEmail(retrievedMessage);
             return email;
         } catch (IOException ie) {

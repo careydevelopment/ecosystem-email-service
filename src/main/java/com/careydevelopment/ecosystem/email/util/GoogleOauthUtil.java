@@ -102,7 +102,7 @@ public class GoogleOauthUtil {
 		try {
 			AuthorizationCodeRequestUrl acru = getAuthorizationCodeFlow(id).newAuthorizationUrl();
 			acru.setRedirectUri(redirectUrl).build();
-			//acru.setState("state");
+			acru.setState("state");
 			
 			LOG.debug(acru.toString());
 			

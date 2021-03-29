@@ -29,9 +29,6 @@ public class Email {
 	public void setPlainText(String plainText) {
 		this.plainText = plainText;
 	}
-
-	
-	
 	
 	public String getSubject() {
 		return subject;
@@ -76,5 +73,4 @@ public class Email {
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
-
 }

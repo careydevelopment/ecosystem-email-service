@@ -9,11 +9,5 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     
         
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        try {
-            
-            //System.err.println("done");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

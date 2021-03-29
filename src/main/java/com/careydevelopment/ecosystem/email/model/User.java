@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,7 +39,7 @@ public class User implements UserDetails {
 	@JsonIgnore
 	private String password;	
 
-   @JsonIgnore
+	@JsonIgnore
     private GoogleApi googleApi;
 
 	
