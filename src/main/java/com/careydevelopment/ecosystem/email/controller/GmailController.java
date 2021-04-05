@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.model.GoogleAuthResponse;
@@ -24,7 +27,9 @@ import com.careydevelopment.ecosystem.email.util.GmailUtil;
 import com.careydevelopment.ecosystem.email.util.GoogleOauthUtil;
 import com.google.api.client.auth.oauth2.Credential;
 
-@Controller
+@CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/email")
 public class GmailController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GmailController.class);
@@ -39,7 +44,7 @@ public class GmailController {
     private AuthorizationUtil authUtil;
 
     
-    @GetMapping("/email/authorizationCode")
+    @GetMapping("/authorizationCode")
     public ResponseEntity<?> getAuthorizationCodeUrl(@RequestParam("redirectUrl") String redirectUrl) {
         User currentUser = authUtil.getCurrentUser();
         
@@ -48,7 +53,7 @@ public class GmailController {
     }
     
     
-    @PostMapping("/email/token")
+    @PostMapping("/token")
     public ResponseEntity<?> createToken(@RequestBody GoogleAuthResponse auth) {
         LOG.debug("In createToken " + auth);
 
@@ -65,7 +70,7 @@ public class GmailController {
     }   
     
     
-    @GetMapping("/email/inbox")
+    @GetMapping("/inbox")
     public ResponseEntity<?> inbox() {
         LOG.debug("In inbox");
 

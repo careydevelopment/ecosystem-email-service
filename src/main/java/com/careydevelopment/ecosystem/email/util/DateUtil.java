@@ -21,8 +21,6 @@ public class DateUtil {
 		try {
 			Date date = GMAIL_DATE_FORMAT.parse(dateString);
 			dateVal = date.getTime();
-			
-			//System.err.println(GMAIL_DATE_FORMAT.format(date));
 		} catch (ParseException pe) {
 			LOG.error("Problem parsing date: " + dateString, pe);
 		}
