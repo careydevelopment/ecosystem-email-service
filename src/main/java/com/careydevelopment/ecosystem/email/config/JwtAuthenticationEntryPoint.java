@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.config;
+package com.careydevelopment.ecosystem.email.config;
 
 import java.io.IOException;
 

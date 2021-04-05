@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-  	<groupId>com.careydevelopment.ecosystem.product</groupId>
+  	<groupId>com.careydevelopment.ecosystem.email</groupId>
   	<artifactId>ecosystem-email-service</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
   
@@ -45,15 +45,27 @@
 		    <artifactId>validation-api</artifactId>
 		</dependency>
 		<dependency>
+		    <groupId>javax.xml.bind</groupId> 
+		    <artifactId>jaxb-api</artifactId>
+		</dependency>
+		<dependency>
           <groupId>com.google.api-client</groupId>
           <artifactId>google-api-client</artifactId>
-          <version>1.30.10</version>
+          <version>1.31.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-gmail</artifactId>
             <version>v1-rev110-1.25.0</version>
         </dependency>
+        <dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-core</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.mongodb</groupId>
+		    <artifactId>mongodb-driver-sync</artifactId>
+		</dependency>
     </dependencies>
   
     <properties>

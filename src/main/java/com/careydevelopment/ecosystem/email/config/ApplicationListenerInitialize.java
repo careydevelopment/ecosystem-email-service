@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.config;
+package com.careydevelopment.ecosystem.email.config;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -9,11 +9,5 @@ public class ApplicationListenerInitialize implements ApplicationListener<Applic
     
         
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        try {
-            
-            System.err.println("done");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

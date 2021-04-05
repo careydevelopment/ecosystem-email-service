@@ -5,7 +5,7 @@
         </encoder>
     </appender>
     
-    <property name="LOG_FILE" value="/etc/careydevelopment/logs/product" />
+    <property name="LOG_FILE" value="/etc/careydevelopment/logs/email" />
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.product.util;
+package com.careydevelopment.ecosystem.email.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
