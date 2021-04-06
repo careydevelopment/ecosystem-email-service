@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class DateUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GoogleOauthUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 	
 	//Tue, 28 Jul 2020 16:27:19 +0000
 	private static DateFormat GMAIL_DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZ");
