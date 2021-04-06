@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.email.util;
+package com.careydevelopment.ecosystem.email.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -11,7 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.careydevelopment.ecosystem.email.constants.Constants;
+import com.careydevelopment.ecosystem.email.constants.GmailFormat;
 import com.careydevelopment.ecosystem.email.model.Email;
+import com.careydevelopment.ecosystem.email.util.DateUtil;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -23,9 +26,9 @@ import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartHeader;
 
 @Component
-public class GmailUtil {
+public class GmailService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GmailUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GmailService.class);
 	
     private static final String SUBJECT_HEADER = "Subject";
     private static final String FROM_HEADER = "From";
@@ -33,21 +36,29 @@ public class GmailUtil {
     private static final String DATE_HEADER = "Date";
 
     
-    public Email getEmail(Message message) {
+    private Email getEmail(Message message, boolean lightweight) {
         Email email = new Email();
-        
-        email.setHtml(getHtmlBody(message));
-        email.setPlainText(getPlainText(message));
-        
-        if (StringUtils.isEmpty(email.getHtml()) && StringUtils.isEmpty(email.getPlainText())) {
-            email.setPlainText(getData(message));
+ 
+        if (!lightweight) {
+            setEmailBody(email, message);
         }
         
         email.setId(message.getId());
+        email.setSnippet(message.getSnippet());
         
         setValuesFromHeaders(email, message);
         
         return email;
+    }
+
+    
+    private void setEmailBody(Email email, Message message) {
+        email.setHtml(getBody(message, "text/html"));
+        email.setPlainText(getBody(message, "text/body"));
+        
+        if (StringUtils.isEmpty(email.getHtml()) && StringUtils.isEmpty(email.getPlainText())) {
+            email.setPlainText(getData(message));
+        }
     }
     
     
@@ -71,16 +82,16 @@ public class GmailUtil {
     }
     
 
-    private Email getSingleEmailMessageById(String id, Gmail service) {
+    public Email getSingleEmailMessageById(String id, Gmail service, boolean lightweight) {
         try {
             Message retrievedMessage = service
                                         .users()
                                         .messages()
                                         .get("me", id)
-                                        .setFormat("full")
+                                        .setFormat(GmailFormat.FULL)
                                         .execute();
             
-            Email email = getEmail(retrievedMessage);
+            Email email = getEmail(retrievedMessage, lightweight);
             return email;
         } catch (IOException ie) {
             LOG.error("Problem retrieving individual message!");
@@ -100,7 +111,7 @@ public class GmailUtil {
         
         if (list != null) {
             list.forEach(message -> {
-                Email email = getSingleEmailMessageById(message.getId(), service);
+                Email email = getSingleEmailMessageById(message.getId(), service, true);
                 if (email != null) emails.add(email);
             });
         }
@@ -110,11 +121,13 @@ public class GmailUtil {
     
     
     private void setValuesFromHeaders(Email email, Message message) {
-        List<MessagePartHeader> headers = message.getPayload().getHeaders();
-        
-        headers.forEach(header -> {
-            setValueFromHeader(header, email);
-        });
+        if (message.getPayload() != null) {
+            List<MessagePartHeader> headers = message.getPayload().getHeaders();
+            
+            headers.forEach(header -> {
+                setValueFromHeader(header, email);
+            });            
+        }
     }
     
     
@@ -138,28 +151,12 @@ public class GmailUtil {
     }
     
     
-    private String getHtmlBody(Message message) {
+    private String getBody(Message message, String type) {
         StringBuilder sb = new StringBuilder();
         
         if (message.getPayload() != null && message.getPayload().getParts() != null) {
             for (MessagePart msgPart : message.getPayload().getParts()) {
-                if (msgPart.getMimeType().contains("text/html"))
-                    sb.append((new String(Base64.getUrlDecoder().decode(msgPart.getBody().getData()))));
-            }           
-        }
-
-        String body = sb.toString();
-        
-        return body;
-    }
-
-
-    private String getPlainText(Message message) {
-        StringBuilder sb = new StringBuilder();
-        
-        if (message.getPayload() != null && message.getPayload().getParts() != null) {
-            for (MessagePart msgPart : message.getPayload().getParts()) {
-                if (msgPart.getMimeType().contains("text/plain"))
+                if (msgPart.getMimeType().contains(type))
                     sb.append((new String(Base64.getUrlDecoder().decode(msgPart.getBody().getData()))));
             }           
         }

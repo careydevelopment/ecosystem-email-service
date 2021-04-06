@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.email.util;
+package com.careydevelopment.ecosystem.email.constants;
 
 public class Constants {
 

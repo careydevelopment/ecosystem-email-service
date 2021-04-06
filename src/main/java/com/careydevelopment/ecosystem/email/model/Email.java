@@ -11,6 +11,7 @@ public class Email {
 	private String from;
 	private String to;
 	private String id;
+	private String snippet;
 
 	public String getHtml() {
 		return html;
@@ -69,8 +70,16 @@ public class Email {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public String getSnippet() {
+        return snippet;
+    }
 
-	public String toString() {
+    public void setSnippet(String snippet) {
+        this.snippet = snippet;
+    }
+
+    public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}
 }

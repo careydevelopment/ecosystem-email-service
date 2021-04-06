@@ -1,4 +1,4 @@
-package com.careydevelopment.ecosystem.email.util;
+package com.careydevelopment.ecosystem.email.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.careydevelopment.ecosystem.email.constants.Constants;
 import com.careydevelopment.ecosystem.email.model.GoogleAuthResponse;
-import com.careydevelopment.ecosystem.email.service.GoogleApiDataStoreFactory;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
 import com.google.api.client.auth.oauth2.Credential;
@@ -29,9 +29,9 @@ import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.services.gmail.GmailScopes;
 
 @Component
-public class GoogleOauthUtil {
+public class GoogleOauthService {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(GoogleOauthUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GoogleOauthService.class);
 
 	@Value("${google.api.oauth2.token.url}") String tokenUrl;
 	@Value("${google.api.oauth2.auth.url}") String authUrl;
@@ -41,7 +41,7 @@ public class GoogleOauthUtil {
 	private DataStore<StoredCredential> dataStore;
 	
 	@Autowired
-	public GoogleOauthUtil(GoogleApiDataStoreFactory dataStoreFactory) {
+	public GoogleOauthService(GoogleApiDataStoreFactory dataStoreFactory) {
 		setupDataStore(dataStoreFactory);	
 	}
 

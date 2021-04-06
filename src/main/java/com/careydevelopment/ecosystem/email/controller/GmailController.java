@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.model.GoogleAuthResponse;
 import com.careydevelopment.ecosystem.email.model.User;
+import com.careydevelopment.ecosystem.email.service.GmailService;
+import com.careydevelopment.ecosystem.email.service.GoogleOauthService;
 import com.careydevelopment.ecosystem.email.util.AuthorizationUtil;
-import com.careydevelopment.ecosystem.email.util.GmailUtil;
-import com.careydevelopment.ecosystem.email.util.GoogleOauthUtil;
 import com.google.api.client.auth.oauth2.Credential;
 
 @CrossOrigin(origins = "*")
@@ -35,10 +34,10 @@ public class GmailController {
     private static final Logger LOG = LoggerFactory.getLogger(GmailController.class);
 
     @Autowired
-    private GmailUtil gmailUtil;
+    private GmailService gmailService;
     
     @Autowired
-    private GoogleOauthUtil googleOauthUtil;
+    private GoogleOauthService googleOauthService;
     
     @Autowired
     private AuthorizationUtil authUtil;
@@ -48,7 +47,7 @@ public class GmailController {
     public ResponseEntity<?> getAuthorizationCodeUrl(@RequestParam("redirectUrl") String redirectUrl) {
         User currentUser = authUtil.getCurrentUser();
         
-        String url = googleOauthUtil.getAuthorizationCodeUrl(currentUser.getId(), redirectUrl);            
+        String url = googleOauthService.getAuthorizationCodeUrl(currentUser.getId(), redirectUrl);            
         return ResponseEntity.ok(url);
     }
     
@@ -60,7 +59,7 @@ public class GmailController {
         User currentUser = authUtil.getCurrentUser();
         
         try {
-            Credential credential = googleOauthUtil.getCredentialFromCode(auth, currentUser.getId());           
+            Credential credential = googleOauthService.getCredentialFromCode(auth, currentUser.getId());           
             return ResponseEntity.ok(credential.getAccessToken());
         } catch (Exception e) {
             LOG.error("Problem retrieving credential!", e);
@@ -78,8 +77,8 @@ public class GmailController {
             List<Email> inbox = new ArrayList<Email>();
             User currentUser = authUtil.getCurrentUser();
             
-            Credential credential = googleOauthUtil.getCredential(currentUser.getId());
-            inbox = gmailUtil.getInbox(credential);
+            Credential credential = googleOauthService.getCredential(currentUser.getId());
+            inbox = gmailService.getInbox(credential);
             
             return ResponseEntity.ok(inbox);
         } catch (IOException ie) {
