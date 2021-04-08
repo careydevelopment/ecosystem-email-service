@@ -44,7 +44,10 @@ public class GmailService {
         }
         
         email.setId(message.getId());
-        email.setSnippet(message.getSnippet());
+        if (message.getSnippet() != null) {
+            String snippet = message.getSnippet();
+            email.setSnippet(snippet.replaceAll("[\\p{Cf}]", "").trim());
+        }
         
         setValuesFromHeaders(email, message);
         
