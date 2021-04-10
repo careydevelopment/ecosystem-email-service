@@ -85,7 +85,7 @@ public class GmailService {
     }
     
 
-    public Email getSingleEmailMessageById(String id, Gmail service, boolean lightweight) {
+    private Email getSingleEmailMessageById(String id, Gmail service, boolean lightweight) {
         try {
             Message retrievedMessage = service
                                         .users()
@@ -101,6 +101,15 @@ public class GmailService {
         }   
         
         return null;
+    }
+    
+    
+    public Email getSingleEmailMessageById(String id, Credential credential) throws IOException, GeneralSecurityException {
+        Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
+                .setApplicationName(Constants.GMAIL_APPLICATION_NAME)
+                .build(); 
+        
+        return this.getSingleEmailMessageById(id, service, false);
     }
     
     

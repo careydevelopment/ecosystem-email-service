@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +84,27 @@ public class GmailController {
             return ResponseEntity.ok(inbox);
         } catch (IOException ie) {
             LOG.error("Problem retrieving inbox!", ie);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ie.getMessage());
+        } catch (GeneralSecurityException ge) {
+            LOG.error("Security issue!", ge);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ge.getMessage());
+        }
+    }
+    
+    
+    @GetMapping("/message/{id}")
+    public ResponseEntity<?> fetchEmailMessage(@PathVariable String id) {
+        LOG.debug("Fetch email message " + id);
+
+        try {
+            User currentUser = authUtil.getCurrentUser();            
+            Credential credential = googleOauthService.getCredential(currentUser.getId());
+            
+            Email email = gmailService.getSingleEmailMessageById(id, credential);
+            
+            return ResponseEntity.ok(email);
+        } catch (IOException ie) {
+            LOG.error("Problem retrieving email!", ie);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ie.getMessage());
         } catch (GeneralSecurityException ge) {
             LOG.error("Security issue!", ge);
