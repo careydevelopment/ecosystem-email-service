@@ -11,8 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.careydevelopment.ecosystem.email.constants.Constants;
-import com.careydevelopment.ecosystem.email.constants.GmailFormat;
+import com.careydevelopment.ecosystem.email.constants.GmailConstants;
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.util.DateUtil;
 import com.google.api.client.auth.oauth2.Credential;
@@ -29,12 +28,7 @@ import com.google.api.services.gmail.model.MessagePartHeader;
 public class GmailService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GmailService.class);
-	
-    private static final String SUBJECT_HEADER = "Subject";
-    private static final String FROM_HEADER = "From";
-    private static final String TO_HEADER = "To";
-    private static final String DATE_HEADER = "Date";
-
+	    
     
     private Email getEmail(Message message, boolean lightweight) {
         Email email = new Email();
@@ -69,9 +63,9 @@ public class GmailService {
         try {
             Messages messages = service.users().messages();
             Gmail.Users.Messages.List messageList = messages
-                                                    .list("me")
-                                                    .setQ("in:inbox -category:{social promotions forums}")
-                                                    .setMaxResults(20l);
+                                                    .list(GmailConstants.CURRENT_USER)
+                                                    .setQ(GmailConstants.INBOX_QUERY)
+                                                    .setMaxResults(GmailConstants.INBOX_EMAIL_COUNT);
             
             ListMessagesResponse rsp = messageList.execute();
             List<Message> list = rsp.getMessages();
@@ -90,8 +84,8 @@ public class GmailService {
             Message retrievedMessage = service
                                         .users()
                                         .messages()
-                                        .get("me", id)
-                                        .setFormat(GmailFormat.FULL)
+                                        .get(GmailConstants.CURRENT_USER, id)
+                                        .setFormat(GmailConstants.FULL_FORMAT)
                                         .execute();
             
             Email email = getEmail(retrievedMessage, lightweight);
@@ -106,7 +100,7 @@ public class GmailService {
     
     public Email getSingleEmailMessageById(String id, Credential credential) throws IOException, GeneralSecurityException {
         Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
-                .setApplicationName(Constants.GMAIL_APPLICATION_NAME)
+                .setApplicationName(GmailConstants.GMAIL_APPLICATION_NAME)
                 .build(); 
         
         return this.getSingleEmailMessageById(id, service, false);
@@ -115,7 +109,7 @@ public class GmailService {
     
     public List<Email> getInbox(Credential credential) throws IOException, GeneralSecurityException {
         Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
-                .setApplicationName(Constants.GMAIL_APPLICATION_NAME)
+                .setApplicationName(GmailConstants.GMAIL_APPLICATION_NAME)
                 .build();           
         
         List<Message> list = getMessageList(service);
@@ -146,16 +140,16 @@ public class GmailService {
     private void setValueFromHeader(MessagePartHeader header, Email email) {
         if (header.getName() != null) {
             switch (header.getName()) {
-                case  SUBJECT_HEADER:
+                case  GmailConstants.SUBJECT_HEADER:
                     email.setSubject(header.getValue());
                     break;
-                case  FROM_HEADER:
+                case  GmailConstants.FROM_HEADER:
                     email.setFrom(header.getValue());
                     break;
-                case  TO_HEADER:
+                case  GmailConstants.TO_HEADER:
                     email.setTo(header.getValue());
                     break;
-                case  DATE_HEADER:
+                case  GmailConstants.DATE_HEADER:
                     email.setDate(DateUtil.getLongValueFromGmailDateFormat(header.getValue()));
                     break;
             }
