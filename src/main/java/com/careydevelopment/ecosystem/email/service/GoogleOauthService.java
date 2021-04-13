@@ -33,12 +33,20 @@ public class GoogleOauthService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GoogleOauthService.class);
 
-	@Value("${google.api.oauth2.token.url}") String tokenUrl;
-	@Value("${google.api.oauth2.auth.url}") String authUrl;
-	@Value("${google.api.oauth2.client.id}") String clientId;
-	@Value("${google.api.oauth2.client.secret}") String clientSecret;
+	@Value("${google.api.oauth2.token.url}") 
+	private String tokenUrl;
+	
+	@Value("${google.api.oauth2.auth.url}") 
+	private String authUrl;
+	
+	@Value("${google.api.oauth2.client.id}") 
+	private String clientId;
+	
+	@Value("${google.api.oauth2.client.secret}") 
+	private String clientSecret;
 	
 	private DataStore<StoredCredential> dataStore;
+	
 	
 	@Autowired
 	public GoogleOauthService(GoogleApiDataStoreFactory dataStoreFactory) {
