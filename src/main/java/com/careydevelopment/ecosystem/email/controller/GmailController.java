@@ -75,7 +75,7 @@ public class GmailController {
         LOG.debug("In inbox");
 
         try {
-            List<Email> inbox = new ArrayList<Email>();
+            List<Email> inbox = new ArrayList<>();
             User currentUser = authUtil.getCurrentUser();
             
             Credential credential = googleOauthService.getCredential(currentUser.getId());
