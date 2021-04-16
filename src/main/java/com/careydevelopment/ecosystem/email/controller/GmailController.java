@@ -5,6 +5,8 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +94,7 @@ public class GmailController {
     }
     
     
-    @GetMapping("/message/{id}")
+    @GetMapping("/messages/{id}")
     public ResponseEntity<?> fetchEmailMessage(@PathVariable String id) {
         LOG.debug("Fetch email message " + id);
 
@@ -109,6 +111,30 @@ public class GmailController {
         } catch (GeneralSecurityException ge) {
             LOG.error("Security issue!", ge);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ge.getMessage());
+        }
+    }
+    
+    
+    @PostMapping("/messages")
+    public ResponseEntity<?> sendEmailMessage(@RequestBody Email email) {
+        LOG.debug("Sending message " + email);
+
+        try {
+            User currentUser = authUtil.getCurrentUser();            
+            Credential credential = googleOauthService.getCredential(currentUser.getId());
+            
+            Email sentEmail = gmailService.sendEmail(email, credential);
+            
+            return ResponseEntity.ok(sentEmail);
+        } catch (IOException ie) {
+            LOG.error("Problem retrieving email!", ie);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ie.getMessage());
+        } catch (GeneralSecurityException ge) {
+            LOG.error("Security issue!", ge);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ge.getMessage());
+        } catch (MessagingException me) {
+            LOG.error("Messaging issue!", me);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(me.getMessage());            
         }
     }
 }

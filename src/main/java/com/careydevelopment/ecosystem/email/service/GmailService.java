@@ -1,10 +1,14 @@
 package com.careydevelopment.ecosystem.email.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.careydevelopment.ecosystem.email.constants.GmailConstants;
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.util.DateUtil;
+import com.careydevelopment.ecosystem.email.util.EmailUtil;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -104,6 +109,40 @@ public class GmailService {
                 .build(); 
         
         return this.getSingleEmailMessageById(id, service, false);
+    }
+    
+    
+    public Email sendEmail(Email email, Credential credential) throws IOException, GeneralSecurityException, MessagingException {
+        Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
+                .setApplicationName(GmailConstants.GMAIL_APPLICATION_NAME)
+                .build(); 
+         
+        Message message = createGmailMessageFromEmail(email);
+        
+        Message sentMessage = service
+                                .users()
+                                .messages()
+                                .send(GmailConstants.CURRENT_USER, message)
+                                .execute();
+        
+        Email sentEmail = getEmail(sentMessage, true);
+        return sentEmail;
+    }
+    
+    
+    private Message createGmailMessageFromEmail(Email email) throws MessagingException, IOException {
+       MimeMessage mimeMessage = EmailUtil.convertEmailToMimeMessage(email);
+       
+       ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+       mimeMessage.writeTo(buffer);
+       
+       byte[] bytes = buffer.toByteArray();
+       String encodedEmail = Base64.getEncoder().encodeToString(bytes);
+       
+       Message message = new Message();
+       message.setRaw(encodedEmail);
+
+       return message;
     }
     
     
