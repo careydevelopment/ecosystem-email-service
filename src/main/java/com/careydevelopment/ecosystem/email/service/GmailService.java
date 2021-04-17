@@ -13,12 +13,14 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.email.constants.GmailConstants;
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.util.DateUtil;
 import com.careydevelopment.ecosystem.email.util.EmailUtil;
+import com.careydevelopment.ecosystem.email.util.StringUtil;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -45,7 +47,7 @@ public class GmailService {
         email.setId(message.getId());
         if (message.getSnippet() != null) {
             String snippet = message.getSnippet();
-            email.setSnippet(snippet.replaceAll("[\\p{Cf}]", "").trim());
+            email.setSnippet(StringUtil.removeZeroWidthNonJoiners(snippet));
         }
         
         setValuesFromHeaders(email, message);
@@ -55,8 +57,8 @@ public class GmailService {
 
     
     private void setEmailBody(Email email, Message message) {
-        email.setHtml(getBody(message, "text/html"));
-        email.setPlainText(getBody(message, "text/body"));
+        email.setHtml(getBody(message, MediaType.TEXT_HTML_VALUE));
+        email.setPlainText(getBody(message, MediaType.TEXT_PLAIN_VALUE));
         
         if (StringUtils.isEmpty(email.getHtml()) && StringUtils.isEmpty(email.getPlainText())) {
             email.setPlainText(getData(message));
@@ -131,7 +133,7 @@ public class GmailService {
     
     
     private Message createGmailMessageFromEmail(Email email) throws MessagingException, IOException {
-       MimeMessage mimeMessage = EmailUtil.convertEmailToMimeMessage(email);
+       MimeMessage mimeMessage = EmailUtil.convertHtmlEmailToMimeMessage(email);
        
        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
        mimeMessage.writeTo(buffer);
@@ -141,7 +143,7 @@ public class GmailService {
        
        Message message = new Message();
        message.setRaw(encodedEmail);
-
+       
        return message;
     }
     
