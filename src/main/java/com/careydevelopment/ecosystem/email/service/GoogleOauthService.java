@@ -92,7 +92,7 @@ public class GoogleOauthService {
 	
 	public Credential getCredential(String id) {
 		Credential credential = null;
-		
+
 		try {
 			GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
 			credential = acf.loadCredential(id);

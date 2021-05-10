@@ -81,6 +81,9 @@ public class GmailController {
             User currentUser = authUtil.getCurrentUser();
             
             Credential credential = googleOauthService.getCredential(currentUser.getId());
+            System.err.println("Current user is " + currentUser);
+            System.err.println("credential is " + credential);
+            
             inbox = gmailService.getInbox(credential);
             
             return ResponseEntity.ok(inbox);
