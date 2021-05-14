@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
 import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.email.exception.EmailServiceAuthenticationException;
-import com.careydevelopment.ecosystem.email.util.PropertiesUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -30,14 +29,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationProvider.class);
 
+    @Value("${jwt.secret}")
     private String jwtSecret = null;
     
-    
-    public JwtAuthenticationProvider(@Value("${ecosystem.properties.file.location}") String propertiesFile) {
-        PropertiesUtil propertiesUtil = new PropertiesUtil(propertiesFile);
-        jwtSecret = propertiesUtil.getProperty("jwt.secret");
-    }
-
     
     @Override
     public boolean supports(Class<?> authentication) {

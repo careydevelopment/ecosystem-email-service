@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.careydevelopment.ecosystem.email.model.Email;
+import com.careydevelopment.ecosystem.email.model.GoogleApiError;
 import com.careydevelopment.ecosystem.email.model.GoogleAuthResponse;
 import com.careydevelopment.ecosystem.email.model.User;
 import com.careydevelopment.ecosystem.email.service.GmailService;
+import com.careydevelopment.ecosystem.email.service.GoogleApiException;
 import com.careydevelopment.ecosystem.email.service.GoogleOauthService;
 import com.careydevelopment.ecosystem.email.util.AuthorizationUtil;
 import com.google.api.client.auth.oauth2.Credential;
@@ -87,13 +89,10 @@ public class GmailController {
             inbox = gmailService.getInbox(credential);
             
             return ResponseEntity.ok(inbox);
-        } catch (IOException ie) {
-            LOG.error("Problem retrieving inbox!", ie);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ie.getMessage());
-        } catch (GeneralSecurityException ge) {
-            LOG.error("Security issue!", ge);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ge.getMessage());
-        }
+        } catch (GoogleApiException ge) {
+            System.err.println("caught " + ge.getError());
+            return ResponseEntity.status(ge.getStatusCode()).body(new GoogleApiError(ge.getError(), ge.getMessage()));
+        } 
     }
     
     

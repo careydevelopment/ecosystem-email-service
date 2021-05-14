@@ -147,7 +147,9 @@ public class GoogleOauthService {
 
 	    try {
 		    GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
-		        
+		    
+		    System.err.println("code is " + auth.getCode());
+		    
 	        AuthorizationCodeTokenRequest req = acf.newTokenRequest(auth.getCode());
 	        req.setRedirectUri(auth.getRedirectUrl());
 
