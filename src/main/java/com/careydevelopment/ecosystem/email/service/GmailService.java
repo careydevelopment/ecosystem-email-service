@@ -13,13 +13,17 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import com.careydevelopment.ecosystem.email.constants.GmailConstants;
 import com.careydevelopment.ecosystem.email.model.Email;
 import com.careydevelopment.ecosystem.email.util.DateUtil;
 import com.careydevelopment.ecosystem.email.util.EmailUtil;
+import com.careydevelopment.ecosystem.email.util.StringUtil;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.gmail.Gmail;
@@ -45,7 +49,7 @@ public class GmailService {
         email.setId(message.getId());
         if (message.getSnippet() != null) {
             String snippet = message.getSnippet();
-            email.setSnippet(snippet.replaceAll("[\\p{Cf}]", "").trim());
+            email.setSnippet(StringUtil.removeZeroWidthNonJoiners(snippet));
         }
         
         setValuesFromHeaders(email, message);
@@ -55,8 +59,8 @@ public class GmailService {
 
     
     private void setEmailBody(Email email, Message message) {
-        email.setHtml(getBody(message, "text/html"));
-        email.setPlainText(getBody(message, "text/body"));
+        email.setHtml(getBody(message, MediaType.TEXT_HTML_VALUE));
+        email.setPlainText(getBody(message, MediaType.TEXT_PLAIN_VALUE));
         
         if (StringUtils.isEmpty(email.getHtml()) && StringUtils.isEmpty(email.getPlainText())) {
             email.setPlainText(getData(message));
@@ -64,7 +68,7 @@ public class GmailService {
     }
     
     
-    private List<Message> getMessageList(Gmail service) {
+    private List<Message> getMessageList(Gmail service) throws GoogleApiException {
         try {
             Messages messages = service.users().messages();
             Gmail.Users.Messages.List messageList = messages
@@ -76,11 +80,13 @@ public class GmailService {
             List<Message> list = rsp.getMessages();
     
             return list;
+        } catch (TokenResponseException ie) {
+            LOG.error(ie.getDetails().getErrorDescription(), ie);
+            throw new GoogleApiException(ie.getDetails().getError(), ie.getDetails().getErrorDescription(), ie.getStatusCode());
         } catch (IOException ie) {
-            LOG.error("Problem retrieving Gmail messages!", ie);
+            LOG.error("Problem retrieving emails!", ie);
+            throw new GoogleApiException("unexpected_error", "Problem retrieving emails", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        
-        return null;
     }
     
 
@@ -131,7 +137,7 @@ public class GmailService {
     
     
     private Message createGmailMessageFromEmail(Email email) throws MessagingException, IOException {
-       MimeMessage mimeMessage = EmailUtil.convertEmailToMimeMessage(email);
+       MimeMessage mimeMessage = EmailUtil.convertHtmlEmailToMimeMessage(email);
        
        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
        mimeMessage.writeTo(buffer);
@@ -141,27 +147,35 @@ public class GmailService {
        
        Message message = new Message();
        message.setRaw(encodedEmail);
-
+       
        return message;
     }
     
     
-    public List<Email> getInbox(Credential credential) throws IOException, GeneralSecurityException {
-        Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
-                .setApplicationName(GmailConstants.GMAIL_APPLICATION_NAME)
-                .build();           
-        
-        List<Message> list = getMessageList(service);
-        List<Email> emails = new ArrayList<Email>();
-        
-        if (list != null) {
-            list.forEach(message -> {
-                Email email = getSingleEmailMessageById(message.getId(), service, true);
-                if (email != null) emails.add(email);
-            });
+    public List<Email> getInbox(Credential credential) throws GoogleApiException {
+        try {
+            Gmail service = new Gmail.Builder(GoogleNetHttpTransport.newTrustedTransport(), new GsonFactory(), credential)
+                    .setApplicationName(GmailConstants.GMAIL_APPLICATION_NAME)
+                    .build();           
+            
+            List<Message> list = getMessageList(service);
+            List<Email> emails = new ArrayList<Email>();
+            
+            if (list != null) {
+                list.forEach(message -> {
+                    Email email = getSingleEmailMessageById(message.getId(), service, true);
+                    if (email != null) emails.add(email);
+                });
+            }
+            
+            return emails;
+        } catch (IOException ie) {
+            LOG.error("Problem accessing Gmail!", ie);
+            throw new GoogleApiException("unexpected_error", ie.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        } catch (GeneralSecurityException ge) {
+            LOG.error("Security problem", ge);
+            throw new GoogleApiException("security_error", ge.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
-        
-        return emails;
     }
     
     

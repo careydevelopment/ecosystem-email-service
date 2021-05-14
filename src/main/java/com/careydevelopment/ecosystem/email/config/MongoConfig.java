@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.careydevelopment.ecosystem.email.util.PropertiesUtil;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
@@ -16,24 +15,19 @@ import com.mongodb.client.MongoClients;
 @EnableMongoRepositories(basePackages= {"com.careydevelopment.ecosystem.email.repository"})
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-    @Value("${mongo.db.name}") 
-    private String ecosystemDb;
-    
-    @Value("${ecosystem.properties.file.location}")
-    private String ecosystemPropertiesFile;
+    @Value("${mongodb.carey-ecosystem.connection}")
+    private String connectionString;
     
     @Override
     protected String getDatabaseName() {
-        return ecosystemDb;
+        return "ecosystem";
     }
   
     
     @Override
     @Bean
     public MongoClient mongoClient() {
-        PropertiesUtil propertiesUtil = new PropertiesUtil(ecosystemPropertiesFile);
-        String connectionString = propertiesUtil.getProperty("mongodb.carey-ecosystem.connection");
-        String fullConnectionString = connectionString + "/" + ecosystemDb;
+        String fullConnectionString = connectionString + "/" + getDatabaseName();
         
         MongoClient client = MongoClients.create(fullConnectionString);
         return client;

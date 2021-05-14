@@ -11,6 +11,7 @@ import com.careydevelopment.ecosystem.email.model.GoogleApi;
 import com.careydevelopment.ecosystem.email.model.User;
 import com.careydevelopment.ecosystem.email.repository.UserRepository;
 import com.careydevelopment.ecosystem.email.util.AuthorizationUtil;
+import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.util.IOUtils;
 import com.google.api.client.util.store.AbstractDataStore;
 import com.google.api.client.util.store.DataStore;
@@ -56,6 +57,10 @@ public class GoogleApiDataStore<V extends Serializable> extends AbstractDataStor
 					GoogleApi googleApi = user.getGoogleApi();
 					
 					if (googleApi != null && googleApi.getStoredCredential() != null) {
+					    Object obj = IOUtils.deserialize(googleApi.getStoredCredential());
+					    StoredCredential sc = (StoredCredential)obj;
+					    System.err.println(sc.getAccessToken());
+					    System.err.println(sc.getRefreshToken());
 						return IOUtils.deserialize(googleApi.getStoredCredential());
 					}
 				}			
@@ -63,7 +68,7 @@ public class GoogleApiDataStore<V extends Serializable> extends AbstractDataStor
 				lock.unlock();
 			}
 		}
-		
+		System.err.println("returning null");
 		return null;
 	}
 

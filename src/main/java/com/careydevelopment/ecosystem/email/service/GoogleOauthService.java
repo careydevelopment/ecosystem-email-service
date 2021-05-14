@@ -92,7 +92,7 @@ public class GoogleOauthService {
 	
 	public Credential getCredential(String id) {
 		Credential credential = null;
-		
+
 		try {
 			GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
 			credential = acf.loadCredential(id);
@@ -147,7 +147,9 @@ public class GoogleOauthService {
 
 	    try {
 		    GoogleAuthorizationCodeFlow acf = getAuthorizationCodeFlow(id);
-		        
+		    
+		    System.err.println("code is " + auth.getCode());
+		    
 	        AuthorizationCodeTokenRequest req = acf.newTokenRequest(auth.getCode());
 	        req.setRedirectUri(auth.getRedirectUrl());
 
