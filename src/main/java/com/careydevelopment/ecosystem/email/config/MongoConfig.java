@@ -15,22 +15,19 @@ import com.mongodb.client.MongoClients;
 @EnableMongoRepositories(basePackages= {"com.careydevelopment.ecosystem.email.repository"})
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-    @Value("${mongo.db.name}") 
-    private String ecosystemDb;
-    
     @Value("${mongodb.carey-ecosystem.connection}")
     private String connectionString;
     
     @Override
     protected String getDatabaseName() {
-        return ecosystemDb;
+        return "ecosystem";
     }
   
     
     @Override
     @Bean
     public MongoClient mongoClient() {
-        String fullConnectionString = connectionString + "/" + ecosystemDb;
+        String fullConnectionString = connectionString + "/" + getDatabaseName();
         
         MongoClient client = MongoClients.create(fullConnectionString);
         return client;
