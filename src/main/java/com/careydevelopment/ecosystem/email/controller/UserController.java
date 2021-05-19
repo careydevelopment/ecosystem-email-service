@@ -17,7 +17,6 @@ import com.careydevelopment.ecosystem.email.model.User;
 import com.careydevelopment.ecosystem.email.service.UserService;
 import com.careydevelopment.ecosystem.email.util.AuthorizationUtil;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/user")
 public class UserController {
