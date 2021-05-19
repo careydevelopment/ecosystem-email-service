@@ -31,7 +31,6 @@ import com.careydevelopment.ecosystem.email.service.GoogleOauthService;
 import com.careydevelopment.ecosystem.email.util.AuthorizationUtil;
 import com.google.api.client.auth.oauth2.Credential;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/email")
 public class GmailController {
