@@ -19,4 +19,4 @@ Remember, all guides are in reverse chronological order so if you want to start 
 The Carey Development CRM <a href="https://github.com/careydevelopment/careydevelopmentcrm">source</a> uses this service.
 
 ## License
-This code is under the [MIT License](https://github.com/careydevelopment/carey-ecosystem-parent/blob/main/LICENSE).
+This code is under the [MIT License](https://github.com/careydevelopment/ecosystem-email-service/blob/0.0.8/LICENSE).
